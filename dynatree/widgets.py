@@ -11,7 +11,11 @@ from django.utils import simplejson as json
 def get_doc(node, values):
     if hasattr(node, "get_doc"):
         return node.get_doc(values)
-    doc = {"title": node.name, "key": node.pk}
+    if hasattr(node, "name"):
+        name = node.name
+    else:
+        name = unicode(node)
+    doc = {"title": name, "key": node.pk}
     if str(node.pk) in values:
         doc['select'] = True
         doc['expand'] = True
