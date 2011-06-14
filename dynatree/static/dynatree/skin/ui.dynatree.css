@@ -224,8 +224,10 @@ span.dynatree-radio:hover
 
 span.dynatree-icon /* Default icon */
 {
-	margin-left: 3px;
+	margin-left: 0;
 	background-position: 0px 0px;
+    width: 0;
+    height: 0;
 }
 
 .dynatree-ico-cf span.dynatree-icon  /* Collapsed Folder */
