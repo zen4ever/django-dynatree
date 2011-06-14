@@ -23,7 +23,7 @@ Usage
 
 In this example Category is a model registered with django-mptt.
 
-Widget accepts *queryset* option, which expects pre-ordered queryset by
+Widget accepts **queryset** option, which expects pre-ordered queryset by
 "tree_id" and "lft".
 
 If you want to adjust tree data creation, you can define 'get_doc' method on
