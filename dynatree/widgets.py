@@ -1,6 +1,7 @@
 from itertools import chain
 
 from django import forms
+from django.conf import settings
 from django.forms.widgets import SelectMultiple
 from django.utils.encoding import force_unicode
 from django.utils.html import conditional_escape
@@ -98,6 +99,7 @@ class DynatreeWidget(SelectMultiple):
                         checkbox: true,
                         selectMode: 2,
                         children: dynatree_data,
+                        debugLevel: %(debug)d,
                         onSelect: function(select, node) {
                             $('#%(id)s_checkboxes').find('input[type=checkbox]').removeAttr('checked');
                             var selNodes = node.tree.getSelectedNodes();
@@ -105,7 +107,6 @@ class DynatreeWidget(SelectMultiple):
                                    $('#%(id)s_' + (node.data.key)).attr('checked', 'checked');
                                    return node.data.key;
                             });
-                            console.log(selKeys);
                         },
                         onClick: function(node, event) {
                             if( node.getEventTargetType(event) == "title" )
@@ -119,7 +120,7 @@ class DynatreeWidget(SelectMultiple):
                         }
                     });
                 });
-                """ % {'id': attrs['id']}
+                """ % {'id': attrs['id'], 'debug': settings.DEBUG and 1 or 0}
             );
         output.append(u'</script>')
         return mark_safe(u'\n'.join(output))
