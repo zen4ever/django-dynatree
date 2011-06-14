@@ -9,8 +9,6 @@ ul.dynatree-container
 	padding: 3px;
 
 	background-color: white;
-	border: 1px dotted gray;
-
 	overflow: auto;
 }
 
