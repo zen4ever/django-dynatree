@@ -144,6 +144,7 @@ INSTALLED_APPS = (
     'django_extensions',
 
     'dynatree',
+    'categories',
 )
 
 # A sample logging configuration. The only tangible logging

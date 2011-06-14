@@ -4,3 +4,4 @@ django-debug-toolbar>=0.8.5
 django-extensions>=0.6
 pep8==0.6.1
 pyflakes==0.4.0
+-e git://github.com/django-mptt/django-mptt.git#egg=django-mptt

@@ -439,3 +439,8 @@ span.custom1 a
 	background-color: maroon;
 	color: yellow;
 }
+
+.dynatree_checkboxes
+{
+    display: none;
+}
