@@ -7,12 +7,16 @@ from django.utils.html import conditional_escape
 from django.utils.safestring import mark_safe
 from django.utils import simplejson as json
 
-def get_doc(node):
+def get_doc(node, values):
     if hasattr(node, "get_doc"):
-        return node.get_doc()
-    return {"title": node.name, "key": node.pk}
+        return node.get_doc(values)
+    doc = {"title": node.name, "key": node.pk}
+    if str(node.pk) in values:
+        doc['select'] = True
+        doc['expand'] = True
+    return doc
 
-def get_tree(nodes):
+def get_tree(nodes, values):
     parent = {}
     parent_level = 0
     stack = []
@@ -21,11 +25,14 @@ def get_tree(nodes):
     def add_doc(node, parent, parent_level):
         if node.level == parent_level:
             if node.level == 0:
-                parent = get_doc(node)
+                parent = get_doc(node, values)
                 results.append(parent)
             else:
+                prev_parent = parent
                 parent_level -= 1
                 parent = stack.pop()
+                if prev_parent.get('expand', False):
+                    parent['expand'] = True
 
         if node.level == parent_level + 2:
             stack.append(parent)
@@ -34,7 +41,10 @@ def get_tree(nodes):
 
         if node.level == parent_level + 1:
             children = parent.get('children', [])
-            children.append(get_doc(node))
+            doc = get_doc(node, values)
+            children.append(doc)
+            if doc.get('select', False):
+                parent['expand'] = True
             parent['children'] = children
         return (parent, parent_level)
 
@@ -79,7 +89,7 @@ class DynatreeWidget(SelectMultiple):
             )
         output.append(u'</ul>')
         output.append(u'<script type="text/javascript">')
-        output.append(u'var dynatree_data = %s;' % json.dumps(get_tree(self.queryset)))
+        output.append(u'var dynatree_data = %s;' % json.dumps(get_tree(self.queryset, str_values)))
         if has_id:
             output.append(
                 """
