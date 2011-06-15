@@ -25,11 +25,6 @@ class Category(models.Model):
     def __unicode__(self):
         return self.url
 
-    @models.permalink
-    def get_absolute_url(self):
-        # Our url doesn't end with `/`, but our absolute_url should
-        return ('categories_detail', (self.url.lstrip('/').rstrip('/'),))
-
     def save(self, force_insert=False, force_update=False, **kwargs):
         super(Category, self).save(
             force_insert=force_insert,
