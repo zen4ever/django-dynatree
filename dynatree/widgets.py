@@ -60,9 +60,10 @@ def get_tree(nodes, values):
 
 
 class DynatreeWidget(SelectMultiple):
-    def __init__(self, attrs=None, choices=(), queryset=None):
+    def __init__(self, attrs=None, choices=(), queryset=None, select_mode=2):
         super(DynatreeWidget, self).__init__(attrs, choices)
         self.queryset = queryset
+        self.select_mode = select_mode
 
     def render(self, name, value, attrs=None, choices=()):
         if value is None:
@@ -101,7 +102,7 @@ class DynatreeWidget(SelectMultiple):
                 $(function() {
                     $("#%(id)s").dynatree({
                         checkbox: true,
-                        selectMode: 2,
+                        selectMode: %(select_mode)d,
                         children: dynatree_data,
                         debugLevel: %(debug)d,
                         onSelect: function(select, node) {
@@ -124,7 +125,11 @@ class DynatreeWidget(SelectMultiple):
                         }
                     });
                 });
-                """ % {'id': attrs['id'], 'debug': settings.DEBUG and 1 or 0}
+                """ % {
+                    'id': attrs['id'],
+                    'debug': settings.DEBUG and 1 or 0,
+                    'select_mode': self.select_mode,
+                }
             );
         output.append(u'</script>')
         return mark_safe(u'\n'.join(output))
