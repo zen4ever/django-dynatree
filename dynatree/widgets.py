@@ -95,15 +95,18 @@ class DynatreeWidget(SelectMultiple):
             )
         output.append(u'</ul>')
         output.append(u'<script type="text/javascript">')
-        output.append(u'var dynatree_data = %s;' % json.dumps(get_tree(self.queryset, str_values)))
         if has_id:
+            output.append(u'var dynatree_data_%s = %s;' % (
+                attrs['id'],
+                json.dumps(get_tree(self.queryset, str_values))
+            ))
             output.append(
                 """
                 $(function() {
                     $("#%(id)s").dynatree({
                         checkbox: true,
                         selectMode: %(select_mode)d,
-                        children: dynatree_data,
+                        children: dynatree_data_%(id)s,
                         debugLevel: %(debug)d,
                         onSelect: function(select, node) {
                             $('#%(id)s_checkboxes').find('input[type=checkbox]').removeAttr('checked');
