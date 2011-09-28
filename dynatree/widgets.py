@@ -15,7 +15,7 @@ def get_doc(node, values):
         name = node.name
     else:
         name = unicode(node)
-    doc = {"title": name, "key": node.pk}
+    doc = {"title": name, "key": node.pk, "url": node.url}
     if str(node.pk) in values:
         doc['select'] = True
         doc['expand'] = True
@@ -27,34 +27,28 @@ def get_tree(nodes, values):
     stack = []
     results = []
 
-    def add_doc(node, parent, parent_level):
-        if node.level == parent_level:
-            if node.level == 0:
-                parent = get_doc(node, values)
-                results.append(parent)
-            else:
-                prev_parent = parent
-                parent_level -= 1
-                parent = stack.pop()
-                if prev_parent.get('expand', False):
-                    parent['expand'] = True
+    def find_parent(child, results):
+        for node in reversed(results):
+            if child.url.startswith(node["url"]):
+                if child.parent_id != node["key"]:
+                    return find_parent(child, node["children"])
+                else:
+                    return node
 
-        if node.level == parent_level + 2:
-            stack.append(parent)
-            parent_level += 1
-            parent = parent['children'][-1]
-
-        if node.level == parent_level + 1:
-            children = parent.get('children', [])
-            doc = get_doc(node, values)
-            children.append(doc)
-            if doc.get('select', False):
+    def add_doc(node):
+        if node.level == 0:
+            results.append(get_doc(node, values))
+        elif node.level >= 1:
+            parent = find_parent(node, results)
+            children = parent.get("children", [])
+            child = get_doc(node, values)
+            if child.get('select', False):
                 parent['expand'] = True
-            parent['children'] = children
-        return (parent, parent_level)
+            children.append(child)
+            parent["children"] = children
 
     for node in nodes:
-        parent, parent_level = add_doc(node, parent, parent_level)
+        add_doc(node)
 
     return results
 
